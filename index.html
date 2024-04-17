@@ -149,26 +149,46 @@
     })
 
     // get url
-    const shareButton = document.getElementById('share')
-    shareButton.addEventListener('click', (ev) => {
-      console.log('share button was clicked')
-x
-      // TODO redirect to a sharable link by completing the steps below
+const shareButton = document.getElementById('share')
+shareButton.addEventListener('click', (ev) => {
+  console.log('share button was clicked')
 
-      // 1. get the current state from localStorage
+  // 1. get the current state from localStorage
+  const items = localStorage.getItem('items');
+  
+  // 2. create a URLSearchParams object from the data you retrieved from localStorage
+  const params = new URLSearchParams();
+  if (items) {
+    JSON.parse(items).forEach((item, index) => {
+      params.append(`item${index}`, item);
+    });
+  }
 
-      // 2. create a URLSearchParams object from the data you retrieved from localStorage
+  // 3. get the current url from window.location
+  const currentUrl = window.location.href;
 
-      // 3. get the current url from window.location
+  // 4. set the current url's search property to '?' concatenated with: the urlsearchparams object's tostring 
+  const newUrl = currentUrl.split('?')[0] + '?' + params.toString();
 
-      // 4. set the current url's search property to '?' concatenated with: the urlsearchparams object's tostring 
+  // 5. update the window.location to the result of the preceding step
+  window.location = newUrl;
+})
 
-      // 5. update the window.location to the result of the preceding step
-    })
 
-    // TODO update from URL by completing the steps below:
-    // 1. when the page loads, look to see if the url has a querystring that has the kind of data you added to it above
-    // 2. if there is such data in the querystring, replace the state in localStorage with the data in the URL
+window.addEventListener('load', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const itemsFromUrl = [];
+  for (const [key, value] of urlParams.entries()) {
+    if (key.startsWith('item')) {
+      itemsFromUrl.push(value);
+    }
+  }
+  
+  if (itemsFromUrl.length > 0) {
+    localStorage.setItem('items', JSON.stringify(itemsFromUrl));
+    itemsFromUrl.forEach(addItemToList);
+  }
+});
 
 
 
